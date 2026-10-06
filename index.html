@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>عالم آية | أحمد الورداني</title>
+    <meta name="description" content="مش مجرد موقع حب... ده عالم كامل معمول مخصوص عشان آية من أحمد الورداني." />
+    
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/hRj4W5x7/1791212250798.jpg" />
+    <link rel="apple-touch-icon" href="https://i.ibb.co/hRj4W5x7/1791212250798.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+    <!-- مكتبات التشغيل المباشر -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+      * { -webkit-tap-highlight-color: transparent; }
+      body {
+        background-color: #080309;
+        color: #fff1f2;
+        font-family: 'Alexandria', sans-serif;
+        overflow-x: hidden;
+      }
+      .font-amiri { font-family: 'Amiri', serif; }
+      .glass-card {
+        background: rgba(30, 15, 27, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(251, 113, 133, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      }
+      @keyframes romantic-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.12); }
+      }
+      .animate-heartbeat { animation: romantic-pulse 2s infinite ease-in-out; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body class="bg-[#080309] text-rose-50 antialiased selection:bg-rose-500 selection:text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      const ASSETS = {
+        mainTogether: 'https://i.ibb.co/QFhrm2nw/IMG-20260731-232043.png',
+        ayaBest: 'https://i.ibb.co/TxZ9swFY/IMG-20260914-WA0003.jpg',
+        ayaSecond: 'https://i.ibb.co/0RFT0Bz1/IMG-20261001-WA0008.jpg',
+        photo3: 'https://i.ibb.co/TxtsB1Yz/IMG-20240514-WA0000.jpg',
+        photo4: 'https://i.ibb.co/KzXsSX4k/IMG-20260817-WA0003.jpg',
+        photo5: 'https://i.ibb.co/4HRvVLH/IMG-20260903-WA0001.jpg',
+        photo6: 'https://i.ibb.co/bRPqvvrH/IMG-20261001-WA0004.jpg',
+        photo7: 'https://i.ibb.co/WWf53zCC/IMG-20261001-WA0005.jpg',
+        photo8: 'https://i.ibb.co/608vXDMD/IMG-20261001-WA0006.jpg',
+        photo9: 'https://i.ibb.co/rfqXNBCh/Snapchat-1097878568.jpg',
+        ahmedLogo: 'https://i.ibb.co/hRj4W5x7/1791212250798.jpg',
+        musicSong: 'https://cdn.imageurlgenerator.com/uploads/17d250ce-abd4-4335-8b86-74bb7285fdc7.mp3'
+      };
+
+      const PAGES_TITLES = [
+        "بوابة عالم آية", "الرسالة الأولى", "حكايتنا", "متحف ذكرياتنا", "ليه آية؟",
+        "رسالة من أحمد", "آلة الذكريات", "لو الدنيا زعلتنا", "لعبة قد إيه تعرفيني؟", "قلب أحمد",
+        "أم عيالي", "بيت أحلامنا", "مستقبلنا", "رسالة من المستقبل", "النجوم",
+        "100 رسالة مخفية", "عداد الحب", "الصورة اللي لسه مستنيينها", "وعد", "النهاية التي ليست نهاية"
+      ];
+
+      const MUSEUM_DATA = [
+        { url: ASSETS.photo3, caption: "الصورة دي يمكن مجرد صورة... بس بالنسبة لي ذكرى كاملة ❤️" },
+        { url: ASSETS.photo4, caption: "هنا كنت مبسوط من غير ما أحس إن الدنيا ممكن تبقى أحلى." },
+        { url: ASSETS.photo5, caption: "اليوم اللي اتمنيت فيه الوقت يقف عشان أعيشه معاكي للأبد." },
+        { url: ASSETS.photo6, caption: "في كل صورة بشوف تفصيلة جديدة بتخليني أحبك أضعاف." },
+        { url: ASSETS.photo7, caption: "وجودك بيغير كل حاجة حواليا وبيعطي للحياة طعم تآني خالص." },
+        { url: ASSETS.photo8, caption: "كل صورة هي خطوة في طريق إحنا الاتنين بنبنيه سوا." },
+        { url: ASSETS.photo9, caption: "مش مجرد لقطة على شاشة... ده وعد بالوفاء لآخر العمر." }
+      ];
+
+      const RANDOM_MEMORIES = [
+        { text: "فاكرة أول مرة اتكلمنا وقولتلك كلام خلى وشك يحمر؟ اليوم ده مبيتنسيش ❤️", img: ASSETS.photo3 },
+        { text: "كل مرة بتبصيلي فيها بحس إن في أمان في الدنيا مش موجود عند أي حد تاني.", img: ASSETS.photo4 },
+        { text: "اليوم اللي ضحكنا فيه سوا ومحسناش بالوقت.. دي كانت أحلى لحظة في عمري!", img: ASSETS.photo5 },
+        { text: "فاكرة لما قولتلك إنك مش مجرد حبيبة، إنتِ دنيتي كلها؟ وكنت قاصد كل حرف.", img: ASSETS.photo6 },
+        { text: "لما بلاقيكي مهتمة بيا وبتسألي عليا، بتأكد إنك هدية ربنا ليا.", img: ASSETS.photo7 },
+        { text: "كل خطوة بنمشيها سوا بتقربنا أكتر للبيت اللي بنحلم بيه يا روحي.", img: ASSETS.photo8 },
+        { text: "صورتك دي بالذات دايماً بفتحها لما أتوحشك وأبتسم من قلبي.", img: ASSETS.photo9 }
+      ];
+
+      const QUIZ_LIST = [
+        {
+          q: "مين بيتعلق أسرع؟ 😉",
+          opts: [
+            { t: "أحمد اتعلق بآية من أول نظرة ❤️", feedback: "صح جداً! أحمد خطفتي قلبه من أول دقيقة" },
+            { t: "آية كانت بتكابر بس مقدرتش تقاوم 🥰", feedback: "حقيقي! قلبك الأبيض مقدرش يقاوم حب أحمد" }
+          ]
+        },
+        {
+          q: "مين بيزعل أسرع؟ 🥺",
+          opts: [
+            { t: "آية الدلوعة الحساسة من أقل حاجة 🌸", feedback: "طبعاً بنوتة أحمد الحساسة وزعلها غالي عليا" },
+            { t: "أحمد لما بيغير على آية أو يحس ببعد 😤", feedback: "أحمد مبيستحملش بعدك ثانية واحدة يا آية" }
+          ]
+        },
+        {
+          q: "مين بيصالح التاني الأول؟ 🫂",
+          opts: [
+            { t: "أحمد.. مستحيل ينام وآية زعلانة منه ❤️", feedback: "أكيد! كل شيء يهون إلا زعل آية" },
+            { t: "آية لما تلاقي أحمد مضايق بتراضيه بكلمة 🕊️", feedback: "حنيتك وطيبة قلبك بتدوب أي زعل فوراً" }
+          ]
+        },
+        {
+          q: "إيه أكتر حاجة أحمد بيحبها في آية؟ ✨",
+          opts: [
+            { t: "ضحكتها العفوية وطيبة قلبها النادرة 💖", feedback: "ضحكتك بتسوى الدنيا وما فيها" },
+            { t: "كل تفصيلة فيها: ملامحها وصوتها وحنيتها ❤️", feedback: "بالضبط! بحبك كلك على بعضك يا آية" }
+          ]
+        }
+      ];
+
+      const HEART_SECTIONS = [
+        { id: "aya", t: "آية", e: "❤️", text: "إنتِ مش مجرد نبض في القلب، إنتِ القلب ذاته اللي بيضخ الحياة والبهجة في عروقي كل يوم." },
+        { id: "home", t: "بيتنا", e: "🏠", text: "بيتنا الدافي اللي بنحلم بيه، اللي ريحته بخور وفرحة، وبابه مقفول علينا على أمان وسلام." },
+        { id: "fam", t: "عيلتنا", e: "👨‍👩‍👧", text: "عيلتنا الصغيرة اللي هنبنيها بالحب، وأطفالنا اللي هيشيلوا ملامحك الجميلة وضحكتك الرقيقة." },
+        { id: "mem", t: "ذكرياتنا", e: "📸", text: "كل موقف، كل صورة، كل خناقة اتصالحنا بعدها، محفورة بين ضلوعي ومستحيل تتنسي." },
+        { id: "fut", t: "مستقبلنا", e: "🌎", text: "الأيام الجاية اللي شايلالنا كل الخير، والمشاوير والنجاحات وإيدينا ماسكة في بعض." },
+        { id: "drm", t: "أحلامنا", e: "💍", text: "الدبلة، والفرح، واليوم اللي تبقي فيه قدام الدنيا كلها مراتي وشريكتي الأبدية." }
+      ];
+
+      const ROOMS_LIST = [
+        { name: "غرفة النوم", e: "❤️", desc: "مملكة الهدوء والأمان.. المكان اللي هنرتاح فيه ونتكلم عن تفاصيل يومنا قبل ما ننام وإحنا مطمنين." },
+        { name: "الصالة", e: "🫂", desc: "الكنبة المريحة اللي هنتفرج فيها على فيلمنا المفضل، والبطانية اللي هنتغطى بيها في الشتا وإحنا بنضحك." },
+        { name: "المطبخ", e: "☕", desc: "ريحة القهوة الصباحية اللي هعملهالك مخصوص، والعشا المتأخر اللي هنعمله سوا ونبوظ الدنيا." },
+        { name: "غرفة الأطفال", e: "👶", desc: "ضحكة الصغار اللي هيملوا البيت فرحة ويصحونا الصبح، وهيبقوا شبه مامتهم آية في كل حاجة." },
+        { name: "البلكونة", e: "🌙", desc: "كوبايتين شاي بلبن، قعدة هادية بالليل تحت النجوم وإيدي في إيدك بنحمد ربنا على النعمة دي." }
+      ];
+
+      const STARS_LIST = ["حب", "أمان", "ضحكة", "بيت", "عيلة", "مستقبل", "آية"];
+
+      const HIDDEN_NOTES = [
+        "وجودك في يومي فرق كبير أوي.",
+        "ضحكتك بتصلح حاجات كتير مكسورة جوايا.",
+        "نفسي أشوفك مبسوطة دايمًا ومشوفش في عينك أي زعل.",
+        "إنتِ واحدة من أجمل وأعظم الحاجات اللي حصلتلي في عمري.",
+        "كل ما بشوفك بحس إن لسه في دنيا حلوة تستاهل نعيشها.",
+        "بحب طريقتك لما تتحمسي وتتكلمي عن حاجة بتحبيها.",
+        "صوتك بلسم بيهدي أي عاصفة أو تعب جوايا.",
+        "لو سألوني عن الأمان، هشاور عليكي علطول.",
+        "إنتِ النعمة اللي بدعي ربنا في كل صلاة يحفظهالي.",
+        "مفيش حد يقدر يملى مكانك، مكانك معمول بمقاس روحك بس.",
+        "معاكي حسيت بالمعنى الحقيقي للبيت.. البيت مش جدران، البيت إنتِ.",
+        "أنا فخور بيكي وبكل خطوة بتعمليها يا روحي.",
+        "لو رجع بيا الزمن هختارك إنتِ برضه بدون أي تردد."
+      ];
+
+      function App() {
+        const [page, setPage] = useState(1);
+        const [isPlaying, setIsPlaying] = useState(false);
+        const [lightbox, setLightbox] = useState(null);
+        const [menuOpen, setMenuOpen] = useState(false);
+        const [easterEgg, setEasterEgg] = useState(null);
+
+        // State per page
+        const [activeTimeline, setActiveTimeline] = useState(2);
+        const [whyReason, setWhyReason] = useState(0);
+        const [randomMem, setRandomMem] = useState(RANDOM_MEMORIES[0]);
+        const [isApologyOpen, setIsApologyOpen] = useState(false);
+        const [isForgiven, setIsForgiven] = useState(false);
+        const [quizAnswers, setQuizAnswers] = useState({});
+        const [activeHeart, setActiveHeart] = useState("aya");
+        const [activeRoom, setActiveRoom] = useState("غرفة النوم");
+        const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+        const [activeStar, setActiveStar] = useState(null);
+        const [hiddenIndex, setHiddenIndex] = useState(0);
+        const [loveLevel, setLoveLevel] = useState(20);
+        const [isPromiseSealed, setIsPromiseSealed] = useState(false);
+
+        const audioRef = useRef(null);
+
+        useEffect(() => {
+          try {
+            audioRef.current = new Audio(ASSETS.musicSong);
+            audioRef.current.loop = true;
+          } catch(e) {}
+        }, []);
+
+        useEffect(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, [page]);
+
+        const fireConfetti = () => {
+          try {
+            if (window.confetti) {
+              window.confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.7 },
+                colors: ['#f43f5e', '#fb7185', '#fda4af', '#f472b6', '#ffffff']
+              });
+            }
+          } catch(e) {}
+        };
+
+        const enterWorld = () => {
+          if (audioRef.current) {
+            audioRef.current.play().catch(e => console.log('Autoplay handled'));
+            setIsPlaying(true);
+          }
+          fireConfetti();
+          setPage(2);
+        };
+
+        const toggleMusic = () => {
+          if (!audioRef.current) return;
+          if (isPlaying) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+          } else {
+            audioRef.current.play();
+            setIsPlaying(true);
+          }
+        };
+
+        const rollMemory = () => {
+          const next = RANDOM_MEMORIES[Math.floor(Math.random() * RANDOM_MEMORIES.length)];
+          setRandomMem(next);
+          fireConfetti();
+        };
+
+        const increaseLove = () => {
+          fireConfetti();
+          setLoveLevel(prev => Math.min(100, prev + 20));
+        };
+
+        return (
+          <div className="min-h-screen flex flex-col justify-between max-w-md mx-auto relative px-3 py-2">
+            {/* Header */}
+            <header className="sticky top-0 z-40 bg-black/75 backdrop-blur-md py-2.5 px-3 rounded-2xl flex items-center justify-between border border-rose-900/40 mb-3 shadow-lg">
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
+                setEasterEgg('أحمد كاتبلك: "اللوجو ده واسمي مش بيلمع إلا بوجودك جنبه يا آية ❤️"');
+                fireConfetti();
+              }}>
+                <img src={ASSETS.ahmedLogo} className="w-8 h-8 rounded-full border border-rose-400 object-cover" />
+                <span className="font-bold text-xs text-rose-200">عالم آية ❤️</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button onClick={() => setMenuOpen(true)} className="px-2.5 py-1 rounded-full bg-rose-950/60 border border-rose-800/40 text-rose-300 text-xs">
+                  الفصول ☰
+                </button>
+                <div className="text-xs font-mono bg-rose-900/50 px-2.5 py-1 rounded-full text-rose-200">
+                  {String(page).padStart(2, '0')} / 20
+                </div>
+              </div>
+            </header>
+
+            {/* Menu Drawer */}
+            {menuOpen && (
+              <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 flex flex-col justify-center animate-in fade-in">
+                <div className="bg-[#1a0c1a] border border-rose-500/40 rounded-3xl p-4 max-h-[80vh] flex flex-col">
+                  <div className="flex justify-between items-center pb-3 border-b border-rose-900/40">
+                    <span className="font-bold text-rose-100 text-sm">فصول عالم آية</span>
+                    <button onClick={() => setMenuOpen(false)} className="text-rose-400 font-bold px-2 py-1">✕ إغلاق</button>
+                  </div>
+                  <div className="overflow-y-auto space-y-1.5 py-3 no-scrollbar flex-1">
+                    {PAGES_TITLES.map((t, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setPage(i + 1); setMenuOpen(false); }}
+                        className={`w-full text-right p-2.5 rounded-xl text-xs flex justify-between ${page === i + 1 ? 'bg-rose-600 text-white font-bold' : 'text-rose-200 hover:bg-rose-950/50'}`}
+                      >
+                        <span>{i + 1}. {t}</span>
+                        {page === i + 1 && <span>❤️</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Lightbox Modal */}
+            {lightbox && (
+              <div onClick={() => setLightbox(null)} className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md p-4 flex items-center justify-center">
+                <div className="bg-[#1a0a1a] border border-rose-500/40 rounded-3xl p-4 max-w-sm w-full text-center space-y-3" onClick={e => e.stopPropagation()}>
+                  <img src={lightbox.url} className="w-full max-h-[55vh] object-contain rounded-2xl" />
+                  <p className="text-sm font-amiri font-bold text-rose-100">{lightbox.caption}</p>
+                  <button onClick={() => setLightbox(null)} className="w-full py-2 bg-rose-600 text-white rounded-xl text-xs font-bold">إغلاق</button>
+                </div>
+              </div>
+            )}
+
+            {/* Easter Egg Modal */}
+            {easterEgg && (
+              <div onClick={() => setEasterEgg(null)} className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md p-4 flex items-center justify-center">
+                <div className="bg-[#240a20] border-2 border-pink-500/60 rounded-3xl p-5 max-w-xs w-full text-center space-y-3" onClick={e => e.stopPropagation()}>
+                  <div className="text-3xl animate-bounce">💖</div>
+                  <p className="text-sm font-amiri font-bold text-rose-100 leading-relaxed">{easterEgg}</p>
+                  <button onClick={() => setEasterEgg(null)} className="w-full py-2 bg-gradient-to-r from-rose-600 to-pink-600 text-white rounded-xl text-xs font-bold">بحبك يا أحمد ❤️</button>
+                </div>
+              </div>
+            )}
+
+            {/* Main Pages Content */}
+            <main className="flex-1 flex flex-col justify-center py-4">
+              {/* PAGE 1 */}
+              {page === 1 && (
+                <div className="text-center space-y-6">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/30 text-rose-300 text-xs">
+                    <span>أحمد الورداني يرحب بآية ❤️</span>
+                  </div>
+                  <div className="w-56 h-56 mx-auto rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-rose-500 via-pink-500 to-amber-300 shadow-2xl relative">
+                    <img src={ASSETS.mainTogether} className="w-full h-full object-cover rounded-[22px]" />
+                    <div className="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-rose-600 flex items-center justify-center text-white shadow-lg animate-heartbeat text-lg">❤️</div>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xs text-rose-300/80">في عالم صغير على الإنترنت...</p>
+                    <p className="text-sm font-medium text-rose-100">في بنت واحدة بس تستاهل يكون ليها عالم كامل ❤️</p>
+                    <h1 className="text-4xl font-extrabold font-amiri text-rose-200">آيـــة</h1>
+                    <p className="text-xs text-rose-300">لو إنتِ آية... ادخلي ❤️</p>
+                  </div>
+                  <button onClick={enterWorld} className="px-8 py-3.5 bg-gradient-to-r from-rose-600 via-pink-600 to-red-600 text-white font-bold rounded-full shadow-xl shadow-rose-600/40 hover:scale-105 transition-all text-sm">
+                    ادخلي عالمي ❤️
+                  </button>
+                </div>
+              )}
+
+              {/* PAGE 2 */}
+              {page === 2 && (
+                <div className="space-y-5 text-right">
+                  <h2 className="text-2xl font-bold font-amiri text-center text-rose-100">قبل ما تبدأي الرحلة... 💌</h2>
+                  <div className="glass-card p-5 rounded-3xl space-y-4">
+                    <img src={ASSETS.ayaBest} className="w-40 h-40 mx-auto rounded-2xl object-cover border border-rose-500/40" />
+                    <p className="font-semibold text-rose-200">آية،</p>
+                    <p className="text-sm leading-relaxed text-rose-100/90">أنا مش عامل الموقع ده عشان أقولك كلمتين حلوين وخلاص، أنا عامل كل تفصيلة فيه عشان أقولك حاجة واحدة... إنتِ بالنسبالي مش شخص عادي دخل حياتي ومشي، إنتِ بقيتي جزء من حياتي ومن أحلامي ومن المستقبل اللي نفسي أعيشه.</p>
+                    <p className="text-xs text-rose-300/90">كل صفحة هنا فيها جزء مني... وكل كلمة معمولة عشانك إنتِ.</p>
+                  </div>
+                  <div className="text-center pt-2">
+                    <p className="text-base font-bold font-amiri text-rose-200 mb-2">يلا نبدأ؟ ❤️</p>
+                    <button onClick={() => { fireConfetti(); setPage(3); }} className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 text-white font-semibold rounded-full text-xs shadow-lg">
+                      ابدئي الرحلة ✨
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 3 */}
+              {page === 3 && (
+                <div className="space-y-5">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold font-amiri text-rose-100">حكايتنا ❤️</h2>
+                    <p className="text-xs text-rose-300/80">خطوات ومحطات غيرت حياتنا للأبد</p>
+                  </div>
+                  <div className="rounded-2xl overflow-hidden border border-rose-500/30 max-h-44">
+                    <img src={ASSETS.photo5} className="w-full h-44 object-cover" />
+                  </div>
+                  <div className="space-y-2.5">
+                    {[
+                      { t: "أول مرة عرفتك فيها", d: "اليوم اللي بدأ فيه كل شيء يتغير وبدأت حكاية مفيش أجمل منها." },
+                      { t: "أول موقف خلاني أتعلق بيكي", d: "عفويتك وبراءة قلبك وطريقتك اللي خطفتني بدون أي استئذان." },
+                      { t: "أجمل يوم بينا", d: "ضحكتنا مع بعض ومحسناش بالوقت بيجري إزاي.. الدنيا كلها نسيتها." },
+                      { t: "اللحظة اللي عرفت فيها إنك مختلفة", d: "عرفت إنك مش شبه حد وإن مفيش منك اتنين في الكون كله." },
+                      { t: "لحد النهارده...", d: "حبك بيكبر كل ثانية وبتأكد إني محظوظ بيكي يا أجمل نصيب." }
+                    ].map((step, i) => (
+                      <div key={i} onClick={() => setActiveTimeline(i)} className={`p-3 rounded-2xl border text-right cursor-pointer transition-all ${activeTimeline === i ? 'bg-rose-950/70 border-rose-500/50' : 'bg-rose-950/20 border-rose-900/30'}`}>
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-xs text-rose-100">{step.t}</span>
+                          <span className="text-xs text-rose-400 font-mono">0{i+1}</span>
+                        </div>
+                        {activeTimeline === i && <p className="text-xs text-rose-200/90 mt-2 pt-1 border-t border-rose-900/40">{step.d}</p>}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-3 bg-rose-950/40 border border-rose-500/30 rounded-2xl text-center text-xs text-rose-200">
+                    والحكاية لسه مخلصتش... دي لسه بتبدأ ❤️
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 4 */}
+              {page === 4 && (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold font-amiri text-rose-100">متحف ذكرياتنا 📸</h2>
+                    <p className="text-xs text-rose-300/80">اضغطي على أي صورة عشان تكبر وتشوفي رسالتها</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {MUSEUM_DATA.map((item, i) => (
+                      <div key={i} onClick={() => setLightbox(item)} className={`rounded-2xl overflow-hidden border border-rose-500/30 bg-black cursor-pointer aspect-square ${i === 0 ? 'col-span-2 aspect-[16/9]' : ''}`}>
+                        <img src={item.url} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 5 */}
+              {page === 5 && (
+                <div className="space-y-5">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold font-amiri text-rose-100">ليه آية؟ ❤️</h2>
+                  </div>
+                  <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-pink-500 to-amber-300 shadow-xl">
+                    <img src={ASSETS.ayaBest} className="w-full h-full object-cover rounded-[22px]" />
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      "عشان وجودك بيغير يومي.",
+                      "عشان ضحكتك ليها مكان مختلف عندي.",
+                      "عشان معاكي بحس إني مش لوحدي.",
+                      "عشان بقيتي جزء من أحلامي.",
+                      "عشان مهما حصل، ليكي مكان خاص في قلبي."
+                    ].map((reason, i) => (
+                      <div key={i} onClick={() => setWhyReason(i)} className={`p-3 rounded-2xl border text-right cursor-pointer ${whyReason === i ? 'bg-rose-900/60 border-rose-400' : 'bg-rose-950/20 border-rose-900/30'}`}>
+                        <p className="font-bold text-xs text-rose-100">{reason}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2 p-2.5 bg-black/40 border border-rose-900/40 rounded-xl">
+                    <img src={ASSETS.photo7} className="w-10 h-10 rounded-lg object-cover" />
+                    <p className="text-xs text-rose-200">"عشان في كل نظرة ليكي بشوف الدنيا بألوان أهدى وأجمل."</p>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 6 */}
+              {page === 6 && (
+                <div className="space-y-5 text-right">
+                  <h2 className="text-2xl font-bold font-amiri text-center text-rose-100">من أحمد إلى آية... ❤️</h2>
+                  <div className="glass-card p-5 rounded-3xl space-y-4">
+                    <img src={ASSETS.ayaSecond} className="w-36 h-36 mx-auto rounded-2xl object-cover border border-rose-500/40" />
+                    <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg">آية، يمكن ساعات معرفش أقول كل اللي جوايا بالطريقة الصح، ويمكن كلامي ساعات ميعرفش يوصل إحساسي زي ما أنا عايز، بس الحقيقة إنك غالية عندي بشكل أكبر من أي كلام.</p>
+                    <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg bg-rose-950/40 p-3 rounded-xl border-r-2 border-rose-500">أنا مش عايز علاقتنا تكون مجرد كلام حلو وصور وقلوب، أنا نفسي تكون حياة كاملة، فيها ضحك، وخلافات نتصالح بعدها، وأيام صعبة نعديها سوا، وأيام حلوة نفتكرها طول عمرنا.</p>
+                    <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg">نفسي لما نبص بعد سنين ونسأل نفسنا: إحنا وصلنا لفين؟ نلاقي إننا لسه ماسكين في بعض.</p>
+                    <p className="text-xl font-bold font-amiri text-rose-400 text-left pt-2">بحبك يا آية ❤️</p>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 7 */}
+              {page === 7 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">آلة الذكريات ⏳</h2>
+                  <p className="text-xs text-rose-300/80">كل ضغطة بتفتح ذكرى عشوائية عشناها سوا</p>
+                  <button onClick={rollMemory} className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold rounded-full text-xs shadow-lg">
+                    اضغطي وشوفي ذكرى عشوائية ❤️
+                  </button>
+                  <div className="glass-card p-4 rounded-3xl space-y-3">
+                    <img src={randomMem.img} className="w-full h-48 object-cover rounded-2xl" />
+                    <p className="text-sm font-amiri font-bold text-rose-100 leading-relaxed">"{randomMem.text}"</p>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 8 */}
+              {page === 8 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">ولو في يوم زعلنا من بعض... 🥺</h2>
+                  <div className="glass-card p-4 rounded-3xl text-right space-y-3">
+                    <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed">أنا مش عايز أي خلاف مهما كان يكبر بينا لدرجة يخلينا ننسى كل حاجة حلوة بينا.</p>
+                    <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed">الخلاف ممكن يحصل، والزعل ممكن يحصل، بس أهم حاجة إننا نعرف نرجع لبعض.</p>
+                  </div>
+                  {!isApologyOpen ? (
+                    <button onClick={() => { setIsApologyOpen(true); fireConfetti(); }} className="px-6 py-3 bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold rounded-full text-xs shadow-lg">
+                      اضغطي لو زعلانة مني 🥺
+                    </button>
+                  ) : (
+                    <div className="glass-card p-5 rounded-3xl text-right space-y-3 border border-rose-400/50 bg-[#250d22]">
+                      <p className="font-bold text-rose-300 text-sm">حقك عليا يا آية ❤️</p>
+                      <p className="text-xs text-rose-100/90 leading-relaxed">لو زعلتك في يوم، بقصد أو من غير قصد، فأنا آسف. أنا مش كامل وممكن أغلط، بس عمري ما أحب أشوفك زعلانة بسببي. تعالي نسيب الزعل على جنب ونرجع نضحك تاني.</p>
+                      {!isForgiven ? (
+                        <button onClick={() => { setIsForgiven(true); fireConfetti(); }} className="w-full py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold mt-2">
+                          سامحتك يا أحمد خلاص ❤️
+                        </button>
+                      ) : (
+                        <div className="text-center p-2 bg-emerald-950/60 border border-emerald-500/40 rounded-xl text-xs text-emerald-200">
+                          أحمد مبسوط أوي وممتن لقلبك الأبيض يا آية! 🥰❤️
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAGE 9 */}
+              {page === 9 && (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold font-amiri text-rose-100">لعبة قد إيه تعرفيني؟ 🎮</h2>
+                    <p className="text-xs text-rose-300/80">اختاري إجابتك وشوفي أحمد هيقولك إيه</p>
+                  </div>
+                  <div className="space-y-3">
+                    {QUIZ_LIST.map((q, idx) => (
+                      <div key={idx} className="glass-card p-3.5 rounded-2xl space-y-2 text-right">
+                        <p className="font-bold text-xs text-rose-100">{q.q}</p>
+                        <div className="space-y-1.5">
+                          {q.opts.map((opt, oIdx) => (
+                            <button
+                              key={oIdx}
+                              onClick={() => {
+                                setQuizAnswers(prev => ({ ...prev, [idx]: oIdx }));
+                                fireConfetti();
+                              }}
+                              className={`w-full text-right p-2.5 rounded-xl text-xs transition-all ${quizAnswers[idx] === oIdx ? 'bg-rose-600 text-white font-bold' : 'bg-rose-950/30 text-rose-200'}`}
+                            >
+                              {opt.t}
+                            </button>
+                          ))}
+                        </div>
+                        {quizAnswers[idx] !== undefined && (
+                          <p className="text-[11px] text-pink-300 bg-pink-950/40 p-2 rounded-lg">💭 {q.opts[quizAnswers[idx]].feedback}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {Object.keys(quizAnswers).length === QUIZ_LIST.length && (
+                    <div className="p-3 bg-rose-900/50 border border-rose-500 rounded-2xl text-center text-xs font-bold text-rose-100">
+                      واضح إنك عارفة أحمد كويس جدًا ❤️
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAGE 10 */}
+              {page === 10 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">قلب أحمد ❤️</h2>
+                  <p className="text-xs text-rose-300/80">اضغطي على أي جزء من القلب واعرفي مكانتك فيه</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {HEART_SECTIONS.map(sec => (
+                      <button
+                        key={sec.id}
+                        onClick={() => { setActiveHeart(sec.id); fireConfetti(); }}
+                        className={`p-3 rounded-2xl flex flex-col items-center gap-1 ${activeHeart === sec.id ? 'bg-rose-600 text-white shadow-lg' : 'bg-rose-950/40 text-rose-200 border border-rose-900/30'}`}
+                      >
+                        <span className="text-xl">{sec.e}</span>
+                        <span className="text-xs font-bold">{sec.t}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {(() => {
+                    const sel = HEART_SECTIONS.find(s => s.id === activeHeart);
+                    return sel ? (
+                      <div className="glass-card p-4 rounded-3xl text-right space-y-2 border border-rose-400/40">
+                        <p className="font-bold text-rose-200 text-sm">{sel.e} {sel.t} في قلب أحمد</p>
+                        <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed">{sel.text}</p>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+              )}
+
+              {/* PAGE 11 */}
+              {page === 11 && (
+                <div className="space-y-5 text-right">
+                  <h2 className="text-2xl font-bold font-amiri text-center text-rose-100">آية... مش بس حبيبتي ❤️</h2>
+                  <div className="glass-card p-5 rounded-3xl space-y-4">
+                    <img src={ASSETS.photo4} className="w-40 h-40 mx-auto rounded-2xl object-cover border border-rose-500/40" />
+                    <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg">إنتِ في خيالي مش بس البنت اللي بحبها، إنتِ الست اللي نفسي أشوفها معايا في كل مراحل حياتي.</p>
+                    <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg bg-rose-950/40 p-3 rounded-xl border-r-2 border-rose-500">نفسي في يوم يكون لينا بيت، وضحكة في البيت، وعيال يجروا حوالينا، ونبص لبعض ونفتكر إن كل التعب والخلافات والخوف كان يستاهل عشان نوصل للحظة دي.</p>
+                    <p className="text-sm font-bold text-rose-300 text-left pt-2">من حبيبك... إلى أم عياله المستقبلية ❤️</p>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 12 */}
+              {page === 12 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">بيت أحلامنا 🏠</h2>
+                  <p className="text-xs text-rose-300/80">اختاري أي غرفة وشوفي أحمد متخيل حياتنا فيها إزاي</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {ROOMS_LIST.map((r, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setActiveRoom(r.name); fireConfetti(); }}
+                        className={`p-2.5 rounded-2xl flex flex-col items-center gap-1 ${activeRoom === r.name ? 'bg-rose-600 text-white shadow-lg' : 'bg-rose-950/40 text-rose-200 border border-rose-900/30'}`}
+                      >
+                        <span className="text-lg">{r.e}</span>
+                        <span className="text-[11px] font-bold">{r.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {(() => {
+                    const sel = ROOMS_LIST.find(r => r.name === activeRoom);
+                    return sel ? (
+                      <div className="glass-card p-4 rounded-3xl text-right space-y-2 border border-rose-400/40">
+                        <p className="font-bold text-rose-200 text-sm">{sel.e} {sel.name}</p>
+                        <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed">{sel.desc}</p>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+              )}
+
+              {/* PAGE 13 */}
+              {page === 13 && (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold font-amiri text-rose-100">لسه في حاجات كتير مستنيانا... 🌎</h2>
+                  </div>
+                  <div className="rounded-2xl overflow-hidden border border-rose-500/30 max-h-44">
+                    <img src={ASSETS.photo8} className="w-full h-44 object-cover" />
+                  </div>
+                  <div className="space-y-2 text-right">
+                    {[
+                      { e: "❤️", t: "يوم نحقق أول حلم سوا" },
+                      { e: "🏠", t: "يوم يكون لينا بيتنا الخاص" },
+                      { e: "✈️", t: "أول سفرية ومغامرة سوا" },
+                      { e: "👨‍👩‍👧", t: "يوم نبقى عيلة كاملة" },
+                      { e: "♾️", t: "وبعد سنين وسنين نفضل سوا..." }
+                    ].map((step, i) => (
+                      <div key={i} className="p-2.5 rounded-xl bg-rose-950/30 border border-rose-900/30 flex items-center gap-2.5">
+                        <span className="text-lg">{step.e}</span>
+                        <span className="text-xs font-bold text-rose-100">{step.t}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-3 bg-rose-950/40 border border-rose-500/30 rounded-2xl text-center text-xs text-rose-200">
+                    "نفسي أفضل أكتب فصول جديدة معاكي بدل ما تكون الحكاية خلصت عند صفحة معينة." ❤️
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 14 */}
+              {page === 14 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">رسالة من المستقبل ✉️</h2>
+                  <p className="text-xs text-rose-300/80">اضغطي على الظرف لفتحه وقراءة الرسالة</p>
+                  {!isEnvelopeOpen ? (
+                    <div onClick={() => { setIsEnvelopeOpen(true); fireConfetti(); }} className="glass-card p-8 rounded-3xl cursor-pointer hover:border-rose-400 transition-all space-y-3">
+                      <div className="text-5xl animate-bounce">💌</div>
+                      <p className="font-bold text-rose-100 text-sm">ظرف مختوم بالشمع الأحمر</p>
+                      <p className="text-xs text-rose-400">إلى: آية الورداني ❤️ (اضغطي للفتح)</p>
+                    </div>
+                  ) : (
+                    <div className="glass-card p-5 rounded-3xl text-right space-y-3 border border-rose-400/50 bg-[#250d22]">
+                      <p className="font-bold text-rose-200 text-sm">رسالة من أحمد بعد سنين...</p>
+                      <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg">آية، لو إنتِ بتقري الرسالة دي بعد سنين، فأنا أتمنى تكوني لسه جنبي، ولسه نفس الضحكة اللي بحبها، ولسه الشخص اللي اختاره قلبي من البداية.</p>
+                      <p className="text-sm font-amiri leading-relaxed text-rose-100/90 text-lg bg-rose-950/40 p-2.5 rounded-xl border-r-2 border-rose-500">ولو الزمن رجع بيا لأول يوم عرفتك فيه... هختارك من جديد.</p>
+                      <p className="text-xs text-rose-300 text-left pt-1">أحمد الورداني ❤️ دائماً وأبداً</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAGE 15 */}
+              {page === 15 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">النجوم 🌌</h2>
+                  <p className="text-xs text-rose-300/80">المسي النجوم واكتشفي معانيها في سمائنا</p>
+                  <div className="relative w-full h-64 bg-gradient-to-b from-[#0e0417] to-[#080209] rounded-3xl border border-rose-500/30 p-4 flex flex-wrap items-center justify-around">
+                    {STARS_LIST.map((star, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setActiveStar(star); fireConfetti(); }}
+                        className="p-2 flex flex-col items-center hover:scale-125 transition-transform"
+                      >
+                        <span className="text-xl">⭐</span>
+                        <span className="text-xs font-bold text-rose-200">{star}</span>
+                      </button>
+                    ))}
+                    <div className="w-full text-center mt-4">
+                      <p className="text-sm font-amiri font-bold text-rose-200 bg-black/60 p-2 rounded-xl">"أجمل نجمة في حياتي اسمها آية ❤️"</p>
+                    </div>
+                  </div>
+                  {activeStar && (
+                    <div className="text-xs text-rose-300 bg-rose-950/40 p-2 rounded-xl">
+                      نجمة <b>"{activeStar}"</b> بتنور مخصوص في سمانا عشانك! ✨
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAGE 16 */}
+              {page === 16 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">100 رسالة مخفية 💌</h2>
+                  <p className="text-xs text-rose-300/80">كبسولات واعترافات سرية من أحمد لآية</p>
+                  <div className="glass-card p-6 rounded-3xl space-y-3 min-h-[140px] flex flex-col justify-center">
+                    <p className="text-base font-amiri font-bold text-rose-100 leading-relaxed">"{HIDDEN_NOTES[hiddenIndex]}"</p>
+                  </div>
+                  <button onClick={() => { setHiddenIndex((hiddenIndex + 1) % HIDDEN_NOTES.length); fireConfetti(); }} className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold rounded-full text-xs shadow-lg">
+                    افتحي رسالة سرية تانية ❤️
+                  </button>
+                </div>
+              )}
+
+              {/* PAGE 17 */}
+              {page === 17 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">عداد الحب ❤️</h2>
+                  <p className="text-xs text-rose-300/80">مستوى حب أحمد لآية</p>
+                  <button onClick={increaseLove} className="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-rose-600 to-pink-500 shadow-2xl flex items-center justify-center text-4xl hover:scale-110 active:scale-90 transition-transform">
+                    ❤️
+                  </button>
+                  <p className="text-xs text-rose-300">اضغطي على القلب لزيادة العداد!</p>
+                  <div className="glass-card p-4 rounded-2xl space-y-2">
+                    <div className="flex justify-between text-xs font-mono">
+                      <span>{loveLevel}%</span>
+                      <span>100%</span>
+                    </div>
+                    <div className="h-3 bg-black/60 rounded-full overflow-hidden p-0.5">
+                      <div className="h-full bg-rose-500 rounded-full transition-all duration-300" style={{ width: `${loveLevel}%` }} />
+                    </div>
+                  </div>
+                  {loveLevel === 100 && (
+                    <div className="glass-card p-4 rounded-3xl space-y-2 bg-[#250d22] border-pink-400">
+                      <p className="text-xs text-rose-300">للأسف العداد وقف عند 100%...</p>
+                      <h3 className="text-2xl font-bold font-amiri text-rose-100">لأن مفيش رقم يكفي. ❤️</h3>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAGE 18 */}
+              {page === 18 && (
+                <div className="text-center space-y-5">
+                  <h2 className="text-2xl font-bold font-amiri text-rose-100">الصورة اللي لسه مستنيين ناخدها... 📸</h2>
+                  <div onClick={() => setLightbox({ url: ASSETS.mainTogether, caption: "دي مش صورة ناقصة... دي ذكرى لسه وقتها مجاش ❤️" })} className="w-64 h-72 mx-auto rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-rose-500 to-amber-300 shadow-2xl cursor-pointer">
+                    <img src={ASSETS.mainTogether} className="w-full h-full object-cover rounded-[22px]" />
+                  </div>
+                  <div className="glass-card p-4 rounded-2xl text-center">
+                    <p className="text-base font-amiri font-bold text-rose-100">"دي مش صورة ناقصة... دي ذكرى لسه وقتها مجاش." ❤️</p>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 19 */}
+              {page === 19 && (
+                <div className="space-y-6 text-center">
+                  <h2 className="text-4xl font-extrabold font-amiri text-rose-100">وَعْـــد ❤️</h2>
+                  <div className="glass-card p-6 rounded-3xl text-right space-y-4">
+                    <p className="text-base font-amiri text-rose-200">مش هقدر أوعدك إن كل أيامنا هتكون سهلة...</p>
+                    <p className="text-base font-amiri font-bold text-rose-100 bg-rose-950/40 p-3 rounded-xl border-r-2 border-rose-500">بس أقدر أوعدك إني لما الدنيا تصعب، مش هكون أول واحد يمشي.</p>
+                    <p className="text-base font-amiri font-bold text-rose-100 bg-rose-950/40 p-3 rounded-xl border-r-2 border-rose-500">وأقدر أوعدك إني هفضل أختارك كل يوم من جديد.</p>
+                    <p className="text-base font-bold font-amiri text-rose-300 text-left pt-2">وعد من أحمد إلى آية ❤️</p>
+                  </div>
+                  {!isPromiseSealed ? (
+                    <button onClick={() => { setIsPromiseSealed(true); fireConfetti(); }} className="px-8 py-3 bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold rounded-full text-xs shadow-lg">
+                      اختمي الوعد ده في قلبك ❤️
+                    </button>
+                  ) : (
+                    <div className="p-3 bg-rose-950/60 border border-rose-400 rounded-2xl text-xs text-rose-200">
+                      تم توثيق الوعد للأبد بين أحمد وآية 🔒❤️
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PAGE 20 */}
+              {page === 20 && (
+                <div className="text-center space-y-5">
+                  <div className="w-48 h-48 mx-auto rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-pink-500 to-amber-300 shadow-2xl">
+                    <img src={ASSETS.photo9} className="w-full h-full object-cover rounded-[22px]" />
+                  </div>
+                  <div className="space-y-2 font-amiri">
+                    <h2 className="text-3xl font-extrabold text-rose-100">آية ❤️</h2>
+                    <p className="text-base text-rose-200">لو سألتيني إيه أجمل جزء في الموقع ده؟</p>
+                    <p className="text-xl font-bold text-rose-100">إن كل حاجة فيه معمولة عشانك. ❤️</p>
+                    <p className="text-base text-rose-200 pt-2">بس أجمل حاجة لسه مش مكتوبة...</p>
+                    <p className="text-xl font-bold text-pink-300">الفصول الجاية من حياتنا. ❤️</p>
+                  </div>
+                  <div className="glass-card p-3.5 rounded-2xl flex items-center justify-between">
+                    <div className="text-right">
+                      <p className="font-bold text-white text-sm">أحمد الورداني ❤️ آية</p>
+                      <p className="text-[11px] text-rose-300">Ahmed Al-Wardani</p>
+                    </div>
+                    <img src={ASSETS.ahmedLogo} className="w-10 h-10 rounded-full border border-rose-400 object-cover" />
+                  </div>
+                  <p className="text-xs font-semibold text-rose-200 font-amiri">"مش مجرد قصة حب... دي حكايتنا." ❤️</p>
+                  <button onClick={() => { fireConfetti(); setPage(1); }} className="px-6 py-2.5 bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 text-white font-bold rounded-full text-xs shadow-lg">
+                    ابدئي الرحلة من الأول ❤️
+                  </button>
+                </div>
+              )}
+            </main>
+
+            {/* Bottom Controls */}
+            <footer className="sticky bottom-0 z-40 bg-black/85 backdrop-blur-md py-2.5 px-3 rounded-2xl flex items-center justify-between border border-rose-900/40 mt-3 shadow-lg">
+              {page > 1 ? (
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} className="px-4 py-2 rounded-full bg-rose-950/60 text-xs text-rose-200 border border-rose-800/40">
+                  السابق
+                </button>
+              ) : <div className="w-16" />}
+
+              <button onClick={toggleMusic} className="px-3 py-1.5 rounded-full bg-rose-900/40 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-1.5">
+                <span>{isPlaying ? '⏸️' : '▶️'}</span>
+                <span>الموسيقى</span>
+              </button>
+
+              <button onClick={() => setPage(p => p < 20 ? p + 1 : 1)} className="px-5 py-2 rounded-full bg-gradient-to-r from-rose-600 to-pink-600 text-white text-xs font-bold shadow-md">
+                {page < 20 ? 'التالي ←' : 'من الأول ❤️'}
+              </button>
+            </footer>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
